@@ -145,14 +145,20 @@ async def config(interaction: discord.Interaction) -> None:
         )
         return
 
-    # Group rows by channel so the embed reads as one section per channel.
-    grouped: dict[int, list[dict]] = {}
+    # Group rows by channel, then by message type within each channel, so
+    # each line reads as "all the emojis for one type" instead of one
+    # line per emoji (which gets very long when many emojis share a type).
+    grouped: dict[int, dict[str, list[str]]] = {}
     for row in rows:
-        grouped.setdefault(row["channel_id"], []).append(row)
+        by_type = grouped.setdefault(row["channel_id"], {})
+        by_type.setdefault(row["message_type"], []).append(row["emoji"])
 
     embed = info_embed("⚙️ Auto-React Configuration")
-    for channel_id, entries in grouped.items():
-        lines = [f"{entry['emoji']} — *{entry['message_type']}*" for entry in entries]
+    for channel_id, by_type in grouped.items():
+        lines = [
+            f"**{message_type}** — {' '.join(emojis)}"
+            for message_type, emojis in by_type.items()
+        ]
         embed.add_field(name=f"<#{channel_id}>", value="\n".join(lines), inline=False)
 
     await interaction.response.send_message(embed=embed)
