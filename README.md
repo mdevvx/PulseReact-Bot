@@ -13,29 +13,22 @@ A Discord bot with a fully configurable, per-server auto-react system, backed by
 
 ## 1. Supabase setup
 
-Create a new Supabase project, then run this SQL in the Supabase SQL Editor to create the required tables.
+Create a new Supabase project, then:
 
-```sql
--- Tracks per-server enabled/disabled state
-create table guilds (
-    guild_id bigint primary key,
-    enabled boolean not null default true,
-    created_at timestamptz not null default now()
-);
+1. Run [sql/001_pulsereact_schema.sql](sql/001_pulsereact_schema.sql) in the Supabase SQL Editor. It creates a dedicated `pulsereact` schema (not `public`) with the `guilds` and `autoreact_configs` tables.
+2. Go to **Project Settings → Data API → Exposed schemas** and add `pulsereact`, otherwise the API returns "Invalid schema: pulsereact".
 
--- Stores auto-react configuration, one row per channel + emoji + message type
-create table autoreact_configs (
-    id bigint generated always as identity primary key,
-    guild_id bigint not null references guilds(guild_id) on delete cascade,
-    channel_id bigint not null,
-    emoji text not null,
-    message_type text not null check (message_type in ('all', 'text', 'image', 'link', 'video', 'file')),
-    unique (guild_id, channel_id, emoji, message_type)
-);
+The bot reads the schema name from `SUPABASE_SCHEMA` (defaults to `pulsereact`).
 
-create index idx_autoreact_guild on autoreact_configs(guild_id);
-create index idx_autoreact_channel on autoreact_configs(guild_id, channel_id);
+### Migrating from an older database
+
+To copy existing data from an old project (tables in `public`) into a new one, set `OLD_SUPABASE_URL`, `OLD_SUPABASE_KEY`, `NEW_SUPABASE_URL` and `NEW_SUPABASE_KEY` in `.env`, complete steps 1 and 2 above on the new project, then run:
+
+```bash
+python -m scripts.migrate_data
 ```
+
+It's safe to re-run, and prints row counts from both sides at the end. Once it succeeds, point `SUPABASE_URL` / `SUPABASE_KEY` at the new project.
 
 From your Supabase project settings, grab the **Project URL** and the **service_role key** (not the anon key, since the bot needs full read/write access from a trusted server environment).
 
@@ -106,6 +99,8 @@ bot/
 │       └── listener.py      # on_message auto-react handler
 ├── database/                # Supabase client and query functions
 └── utils/                   # Checks, embeds, emoji parsing
+sql/                         # Schema setup SQL
+scripts/migrate_data.py      # One-off old -> new DB data migration
 ```
 
 ## Notes

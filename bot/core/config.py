@@ -24,6 +24,7 @@ class Config:
     owner_id: int
     supabase_url: str
     supabase_key: str
+    supabase_schema: str
 
 
 def _get_required_env(key: str) -> str:
@@ -59,6 +60,8 @@ def load_config() -> Config:
         owner_id=owner_id,
         supabase_url=_get_required_env("SUPABASE_URL"),
         supabase_key=_get_required_env("SUPABASE_KEY"),
+        # Tables live in a dedicated schema, not public.
+        supabase_schema=os.getenv("SUPABASE_SCHEMA") or "pulsereact",
     )
 
 
