@@ -20,7 +20,7 @@ class SyncCog(commands.Cog):
     @commands.is_owner()
     async def sync(self, ctx: commands.Context) -> None:
         """
-        kick!sync
+        !sync
         Syncs all slash commands globally with Discord.
         Restricted to the bot owner via commands.is_owner().
         """

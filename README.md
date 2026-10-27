@@ -9,7 +9,7 @@ A Discord bot with a fully configurable, per-server auto-react system, backed by
 - Reacts to messages from any user or bot (except itself)
 - `/pulsereact toggle` to fully enable/disable the bot per server, independently of every other server
 - `/pulsereact status` to check bot health (latency, uptime, server count)
-- `kick!sync` owner-only command to sync slash commands globally
+- `!sync` owner-only command to sync slash commands globally
 
 ## 1. Supabase setup
 
@@ -67,16 +67,16 @@ python -m bot.main
 Once the bot is online, DM it or use it in a server as the owner and run:
 
 ```
-kick!sync
+!sync
 ```
 
-This registers all slash commands globally. It can take up to an hour to appear everywhere the first time, subsequent syncs after further command changes will also need `kick!sync` run again.
+This registers all slash commands globally. It can take up to an hour to appear everywhere the first time, subsequent syncs after further command changes will also need `!sync` run again.
 
 ## Commands
 
 | Command | Access | Description |
 |---|---|---|
-| `kick!sync` | Owner only | Syncs slash commands globally |
+| `!sync` | Owner only | Syncs slash commands globally |
 | `/pulsereact status` | Everyone | Shows bot status |
 | `/pulsereact toggle` | Manage Server | Enables/disables PulseReact for this server |
 | `/pulsereact autoreact add` | Manage Server | Adds emojis to a channel with a message type filter |
@@ -91,7 +91,7 @@ bot/
 ├── core/                   # Config, logger, bot client
 ├── cogs/
 │   ├── group.py            # Shared /pulsereact command group
-│   ├── owner/sync.py        # kick!sync
+│   ├── owner/sync.py        # !sync
 │   ├── general/status.py    # /pulsereact status
 │   ├── admin/toggle.py       # /pulsereact toggle
 │   └── autoreact/

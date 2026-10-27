@@ -16,7 +16,7 @@ from bot.core.logger import get_logger
 
 logger = get_logger("core.client")
 
-# Cogs are loaded in this order. Owner cog first so kick!sync is
+# Cogs are loaded in this order. Owner cog first so !sync is
 # always available even if another cog fails to load.
 COG_MODULES = [
     "bot.cogs.owner.sync",
@@ -44,7 +44,7 @@ class PulseReactBot(commands.Bot):
         intents.messages = True
 
         super().__init__(
-            command_prefix="kick!",
+            command_prefix="!",
             intents=intents,
             help_command=None,  # We are not using the default help command.
             owner_id=config.owner_id,  # Enables commands.is_owner() checks.
@@ -85,10 +85,10 @@ class PulseReactBot(commands.Bot):
         self, ctx: commands.Context, error: commands.CommandError
     ) -> None:
         """
-        Global handler for prefix command errors (currently just kick!sync).
+        Global handler for prefix command errors (currently just !sync).
         """
         if isinstance(error, commands.CommandNotFound):
-            # Silently ignore unknown kick! commands instead of spamming errors.
+            # Silently ignore unknown ! commands instead of spamming errors.
             return
 
         if isinstance(error, commands.NotOwner):
